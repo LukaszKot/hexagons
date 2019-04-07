@@ -1,0 +1,89 @@
+body
+{
+    margin: 0;
+    padding: 0;
+}
+
+#menu
+{
+    float: left;
+    width: 15%;
+    background-color: #111111;
+    height: 100vh;
+}
+
+#json
+{
+    float: left;
+    width: 25%;
+    background-color: #333333;
+    height: 100vh;
+    overflow-y: scroll;
+    color: white;
+    white-space: pre;
+}
+
+#main
+{
+    float: left;
+    width: 60%;
+    height: 100vh;
+    background-color: #333333;
+    overflow: scroll;
+    position: relative;
+}
+
+.selects
+{
+    width: 90%;
+    margin: 5%;
+}
+
+.buttons-style
+{
+    border: 2px solid #888888;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+.buttons-style:hover
+{
+    background-color: #222222;
+}
+
+.hexagon
+{
+    background-image: url("../gfx/hexagon.png");
+    background-repeat: no-repeat;
+    background-size: 220px 200px;
+    width: 220px;
+    height: 200px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.arrow
+{
+    background-image: url("../gfx/arrow-up.png");
+    background-repeat: no-repeat;
+    background-size: 75px 75px;
+    width: 100%;
+    height: 140px;
+    background-position: top center;
+    font-size: 75px;
+    padding-top: 60px;
+    text-align: center;
+    -webkit-user-select: none;   
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.buttons-style a
+{
+    display: block;
+    color: white;
+    text-decoration: none;
+}
