@@ -2,7 +2,7 @@ var Settings = {
     isAxisHelper: true,
     isOrbitControl: true,
     hexRadius: 100,
-    hexHeight: 150,
+    hexHeight: 75,
     wallWidth: 10,
     floorHeight: 10,
     hexMaterial: new THREE.MeshPhongMaterial({
