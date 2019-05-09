@@ -100,9 +100,9 @@ $(document).ready(function () {
         updateSubscriber.push(player);
         followedObject = player
 
-        allies.push(new Entity(createSimpleModel()));
-        scene.add(allies[0].getElement())
-        updateSubscriber.push(allies[0]);
+        var ally = new Entity(createSimpleModel());
+        scene.add(ally.getElement())
+        updateSubscriber.push(ally)
 
         var isRaycasterEnabled = true
 
