@@ -1,10 +1,11 @@
 class Entity {
-    constructor(modelContainer, object) {
+    constructor(modelContainer, object, movingPrecision) {
         this.container = new THREE.Object3D();
         this.entity = modelContainer
         this.entity.position.set(0, 5, 0)
         this.container.add(this.entity);
         this.object = object
+        this.movingPrecision = movingPrecision;
     }
 
     getElement() {
@@ -29,17 +30,16 @@ class Entity {
 
     update() {
         if (this.directionVect) {
-            if (this.getDistanceFromTarget() > 2) {
+            if (this.getDistanceFromTarget() > this.movingPrecision) {
                 this.getElement().translateOnAxis(this.directionVect, 2)
                 if (this.object) {
-                    if (this.getDistanceFromTarget() < 2) {
+                    if (this.getDistanceFromTarget() < this.movingPrecision) {
                         this.object.setAnimation("1stand")
                     }
                 }
             }
 
         }
-
     }
 
     getDistanceFromTarget() {
