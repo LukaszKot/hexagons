@@ -103,7 +103,7 @@ $(document).ready(function () {
         updateSubscriber.push(player);
         followedObject = player
 
-        var allies = [new Entity(createSimpleModel(), null, Settings.allyMovingPrecision)];
+        allies.push(new Entity(createSimpleModel(), null, Settings.allyMovingPrecision))
         scene.add(allies[0].getElement())
         updateSubscriber.push(allies[0])
 
@@ -121,7 +121,6 @@ $(document).ready(function () {
         scene.add(player.getElement())
         updateSubscriber.push(player);
         followedObject = player
-        var allies = [];
         for (var i = 0; i < 3; i++) {
             var theAlly = new Entity(createSimpleModel(), null, Settings.allyMovingPrecision);
             allies.push(theAlly)
