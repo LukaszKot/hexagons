@@ -1,24 +1,18 @@
-class Player {
+class Entity {
     constructor(modelContainer, object) {
         this.container = new THREE.Object3D();
-        this.player = modelContainer
-        this.player.position.set(0, 5, 0)
-        this.container.add(this.player);
+        this.entity = modelContainer
+        this.entity.position.set(0, 5, 0)
+        this.container.add(this.entity);
         this.object = object
     }
-
-    // createPlayerMesh() {
-    //     var geometry = new THREE.BoxGeometry(10, 10, 10);
-    //     var material = Settings.playerMaterial;
-    //     return new THREE.Mesh(geometry, material);
-    // }
 
     getElement() {
         return this.container;
     }
 
-    getPlayerMesh() {
-        return this.player;
+    getEntityMesh() {
+        return this.entity;
     }
 
     move(vector) {
@@ -30,7 +24,7 @@ class Player {
             this.container.position.clone().x - vector.x,
             this.container.position.clone().z - vector.z,
         )
-        this.player.rotation.y = angle
+        this.entity.rotation.y = angle
     }
 
     update() {
@@ -45,10 +39,6 @@ class Player {
             }
 
         }
-        camera.position.x = this.getElement().position.x + 100
-        camera.position.z = this.getElement().position.z + 200
-        camera.position.y = this.getElement().position.y + 200
-        camera.lookAt(this.getElement().position)
 
     }
 

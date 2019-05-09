@@ -4,6 +4,8 @@ var renderer;
 var updateSubscriber = [];
 var clock = new THREE.Clock();
 var player;
+var allies = []
+var followedObject;
 
 $(document).ready(function () {
     scene = new THREE.Scene();
@@ -44,11 +46,12 @@ $(document).ready(function () {
         level.getContainer().position.y -= Settings.floorHeight - 0.3
         model.loadModel("models/player.json", Settings.playerModelMaterial, "player")
             .then(() => {
-                player = new Player(model.container, model)
+                player = new Entity(model.container, model)
                 scene.add(player.getElement())
                 updateSubscriber.push(model)
                 updateSubscriber.push(player)
                 model.setAnimation("1stand")
+                followedObject = player
             })
         scene.add(level.getContainer())
         var isRaycasterEnabled = true
@@ -70,10 +73,40 @@ $(document).ready(function () {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         Settings.isOrbitControl = false;
-        player = new Player(createSimpleModel());
+        player = new Entity(createSimpleModel());
+        followedObject = player
         scene.add(player.getElement())
         updateSubscriber.push(player);
         var isRaycasterEnabled = true
+    }
+    else if (view == "single-ally") {
+        function createSimpleModel() {
+            var container = new THREE.Object3D();
+            var geometry = new THREE.BoxGeometry(10, 10, 10);
+            var material = Settings.playerMaterial;
+            var box = new THREE.Mesh(geometry, material);
+            container.add(box);
+            var axis = new THREE.AxesHelper(10)
+            axis.rotation.y = Math.PI
+            container.add(axis)
+            return container;
+        }
+        var gridObject = new Grid();
+        scene.add(gridObject.getPlane())
+        Settings.isOrbitControl = false;
+
+        player = new Entity(createSimpleModel());
+        scene.add(player.getElement())
+        updateSubscriber.push(player);
+        followedObject = player
+
+        allies.push(new Entity(createSimpleModel()));
+        scene.add(allies[0].getElement())
+        updateSubscriber.push(allies[0]);
+
+        var isRaycasterEnabled = true
+
+
     }
 
     if (Settings.isOrbitControl) {
@@ -91,7 +124,7 @@ $(document).ready(function () {
         var material = Settings.raycasterMaterial
         var sphere = new THREE.Mesh(geometry, material);
         scene.add(sphere)
-        $(document).mousedown((event) => {
+        $("#root").mousedown((event) => {
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1;
             raycaster.setFromCamera(mouseVector, camera);
@@ -110,10 +143,16 @@ $(document).ready(function () {
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
+        var delta = clock.getDelta();
         for (var i = 0; i < updateSubscriber.length; i++) {
-            var delta = clock.getDelta();
             updateSubscriber[i].update(delta);
         }
+        if (followedObject != null) {
+            var position = followedObject.getElement().position;
+            camera.position.set(position.x + 100, position.y + 200, position.z + 200)
+            camera.lookAt(position)
+        }
+
     }
     render();
 

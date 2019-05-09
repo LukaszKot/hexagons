@@ -19,7 +19,6 @@ class Model {
                 meshModel.rotation.y = -Math.PI / 2
                 this.meshModel = meshModel;
                 this.mixer = new THREE.AnimationMixer(this.meshModel)
-                console.log(this.meshModel.geometry.animations)
                 this.container.add(meshModel)
                 resolve(meshModel);
             });
