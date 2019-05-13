@@ -13,6 +13,14 @@ class Level3D {
             })
     }
 
+    generateAlly() {
+        var model = new Model();
+        model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
+            .then(() => {
+
+            })
+    }
+
     getData(id) {
         return this.net.getLevel(this.levelId);
     }
