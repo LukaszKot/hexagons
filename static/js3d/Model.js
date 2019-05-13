@@ -37,5 +37,14 @@ class Model {
         this.mixer.clipAction(name).play();
     }
 
+    clone() {
+        var model = new Model()
+        model.container = new THREE.Object3D()
+        model.meshModel = this.meshModel.clone();
+        model.container.add(model.meshModel)
+        model.mixer = new THREE.AnimationMixer(model.meshModel)
+        return model
+    }
+
 
 }

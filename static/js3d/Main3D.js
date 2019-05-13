@@ -6,6 +6,8 @@ var clock = new THREE.Clock();
 var player;
 var allies = []
 var followedObject;
+var team;
+var mousePosition = null
 
 $(document).ready(function () {
     scene = new THREE.Scene();
@@ -26,6 +28,18 @@ $(document).ready(function () {
         scene.add(axes)
     }
 
+    function createSimpleModel() {
+        var container = new THREE.Object3D();
+        var geometry = new THREE.BoxGeometry(10, 10, 10);
+        var material = Settings.playerMaterial;
+        var box = new THREE.Mesh(geometry, material);
+        container.add(box);
+        var axis = new THREE.AxesHelper(10)
+        axis.rotation.y = Math.PI
+        container.add(axis)
+        return container;
+    }
+
     if (view == "hex") {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
@@ -42,16 +56,18 @@ $(document).ready(function () {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         var model = new Model()
-        var level = new Level3D(0);
+        var level = new Level3D(0, updateSubscriber, allies);
         level.getContainer().position.y -= Settings.floorHeight - 0.3
         model.loadModel("models/player.json", Settings.playerModelMaterial, "player")
             .then(() => {
-                player = new Entity(model.container, model)
+                player = new Entity(model.container, model, Settings.playerMovingPrecision)
                 scene.add(player.getElement())
                 updateSubscriber.push(model)
                 updateSubscriber.push(player)
                 model.setAnimation("1stand")
                 followedObject = player
+                team = new Team(player)
+                updateSubscriber.push(team)
             })
         scene.add(level.getContainer())
         var isRaycasterEnabled = true
@@ -73,40 +89,53 @@ $(document).ready(function () {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         Settings.isOrbitControl = false;
-        player = new Entity(createSimpleModel());
+        player = new Entity(createSimpleModel(), null, Settings.playerMovingPrecision);
         followedObject = player
         scene.add(player.getElement())
         updateSubscriber.push(player);
         var isRaycasterEnabled = true
     }
     else if (view == "single-ally") {
-        function createSimpleModel() {
-            var container = new THREE.Object3D();
-            var geometry = new THREE.BoxGeometry(10, 10, 10);
-            var material = Settings.playerMaterial;
-            var box = new THREE.Mesh(geometry, material);
-            container.add(box);
-            var axis = new THREE.AxesHelper(10)
-            axis.rotation.y = Math.PI
-            container.add(axis)
-            return container;
-        }
+
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         Settings.isOrbitControl = false;
 
-        player = new Entity(createSimpleModel());
+        player = new Entity(createSimpleModel(), null, Settings.playerMovingPrecision);
         scene.add(player.getElement())
         updateSubscriber.push(player);
         followedObject = player
 
-        allies.push(new Entity(createSimpleModel()));
+        allies.push(new Entity(createSimpleModel(), null, Settings.allyMovingPrecision))
         scene.add(allies[0].getElement())
-        updateSubscriber.push(allies[0]);
+        updateSubscriber.push(allies[0])
 
+        team = new Team(player)
+        updateSubscriber.push(team)
         var isRaycasterEnabled = true
 
+    }
+    else if (view == "multiple-ally") {
+        var gridObject = new Grid();
+        scene.add(gridObject.getPlane())
+        Settings.isOrbitControl = false;
 
+        player = new Entity(createSimpleModel(), null, Settings.playerMovingPrecision);
+        scene.add(player.getElement())
+        updateSubscriber.push(player);
+        followedObject = player
+        for (var i = 0; i < 3; i++) {
+            var theAlly = new Entity(createSimpleModel(), null, Settings.allyMovingPrecision);
+            allies.push(theAlly)
+            scene.add(theAlly.getElement())
+            theAlly.getElement().position.x = Math.random() * 100 - 50
+            theAlly.getElement().position.z = Math.random() * 100 - 50
+            updateSubscriber.push(theAlly)
+        }
+
+        team = new Team(player)
+        updateSubscriber.push(team)
+        var isRaycasterEnabled = true
     }
 
     if (Settings.isOrbitControl) {
@@ -128,6 +157,21 @@ $(document).ready(function () {
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1;
             raycaster.setFromCamera(mouseVector, camera);
+
+            for (var i = 0; i < allies.length; i++) {
+                var theContainer = allies[i].getEntityMesh()
+                var intersects = raycaster.intersectObjects(theContainer.children);
+
+                if (intersects.length > 0) {
+                    for (var j = 0; j < team.allies.length; j++) {
+                        if (team.allies[j].getEntityMesh().children[0].uuid ==
+                            theContainer.children[0].uuid) return;
+                    }
+                    team.addAlly(allies[i])
+                    return;
+                }
+            }
+
             var intersects = raycaster.intersectObjects(scene.children);
 
             if (intersects.length > 0) {
@@ -136,6 +180,33 @@ $(document).ready(function () {
                 player.move(vector)
                 sphere.position.set(clickedVect.x, 0, clickedVect.z)
             }
+        })
+        $("#root").on("mousemove", (event) => {
+            mousePosition = event;
+        })
+        setInterval(() => {
+            if (mousePosition == null) return;
+            mouseVector.x = (mousePosition.clientX / $(window).width()) * 2 - 1;
+            mouseVector.y = -(mousePosition.clientY / $(window).height()) * 2 + 1;
+            raycaster.setFromCamera(mouseVector, camera);
+
+            for (var i = 0; i < allies.length; i++) {
+                var theContainer = allies[i].getEntityMesh()
+                var intersects = raycaster.intersectObjects(theContainer.children);
+
+                if (intersects.length > 0) {
+                    if (view == "game") {
+                        var position = allies[i].getElement().position.clone();
+                        var ring = new Ring(position);
+                        scene.add(ring)
+                        setTimeout(() => {
+                            scene.remove(ring)
+                        })
+                    }
+                    return;
+                }
+            }
+
         })
     }
 
