@@ -1,5 +1,5 @@
 class Level3D {
-    constructor(id, updateSubscriber) {
+    constructor(id, updateSubscriber, allies) {
         this.levelId = id
         this.radius = Settings.hexRadius
         this.hexHeight = Settings.hexHeight;
@@ -7,6 +7,7 @@ class Level3D {
         this.net = new Net();
         this.lights = []
         this.updateSubscriber = updateSubscriber;
+        this.allies = allies;
         this.generateAlly()
             .then(x => {
                 return this.getData(0)
@@ -62,6 +63,7 @@ class Level3D {
                 this.container.add(ally.getElement())
                 this.updateSubscriber.push(ally.object)
                 this.updateSubscriber.push(ally);
+                allies.push(ally)
                 ally.object.setAnimation(ally.standingAnimation)
             }
         }

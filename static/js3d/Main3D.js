@@ -7,6 +7,7 @@ var player;
 var allies = []
 var followedObject;
 var team;
+var mousePosition = null
 
 $(document).ready(function () {
     scene = new THREE.Scene();
@@ -55,7 +56,7 @@ $(document).ready(function () {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         var model = new Model()
-        var level = new Level3D(0, updateSubscriber);
+        var level = new Level3D(0, updateSubscriber, allies);
         level.getContainer().position.y -= Settings.floorHeight - 0.3
         model.loadModel("models/player.json", Settings.playerModelMaterial, "player")
             .then(() => {
@@ -65,6 +66,7 @@ $(document).ready(function () {
                 updateSubscriber.push(player)
                 model.setAnimation("1stand")
                 followedObject = player
+                team = new Team(player)
             })
         scene.add(level.getContainer())
         var isRaycasterEnabled = true
@@ -172,6 +174,13 @@ $(document).ready(function () {
                 player.move(vector)
                 sphere.position.set(clickedVect.x, 0, clickedVect.z)
             }
+        })
+        $("#root").on("mousemove", (event) => {
+            mousePosition = event;
+        })
+        setInterval(() => {
+            if (mousePosition) console.log("mouse position", "x: " + mousePosition.clientX,
+                "y: " + mousePosition.clientY)
         })
     }
 
