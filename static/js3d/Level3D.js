@@ -23,7 +23,7 @@ class Level3D {
         return new Promise((accept, reject) => {
             model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
                 .then(() => {
-                    this.ally = new Entity(model.container, model, Settings.allyMovingPrecision, "Stand", "run")
+                    this.ally = new Entity(model.container, model, Settings.allyMovingPrecisionGame, "Stand", "run")
                     accept();
                 })
         })

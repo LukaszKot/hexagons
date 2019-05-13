@@ -67,6 +67,7 @@ $(document).ready(function () {
                 model.setAnimation("1stand")
                 followedObject = player
                 team = new Team(player)
+                updateSubscriber.push(team)
             })
         scene.add(level.getContainer())
         var isRaycasterEnabled = true
@@ -160,7 +161,13 @@ $(document).ready(function () {
             for (var i = 0; i < allies.length; i++) {
                 var theContainer = allies[i].getEntityMesh()
                 var intersects = raycaster.intersectObjects(theContainer.children);
+
                 if (intersects.length > 0) {
+                    console.log(theContainer.children[0].geometry.animations)
+                    for (var j = 0; j < team.allies.length; j++) {
+                        if (team.allies[j].getEntityMesh().children[0].uuid ==
+                            theContainer.children[0].uuid) return;
+                    }
                     team.addAlly(allies[i])
                     return;
                 }
@@ -178,10 +185,10 @@ $(document).ready(function () {
         $("#root").on("mousemove", (event) => {
             mousePosition = event;
         })
-        setInterval(() => {
-            if (mousePosition) console.log("mouse position", "x: " + mousePosition.clientX,
-                "y: " + mousePosition.clientY)
-        })
+        // setInterval(() => {
+        //     if (mousePosition) console.log("mouse position", "x: " + mousePosition.clientX,
+        //         "y: " + mousePosition.clientY)
+        // })
     }
 
 

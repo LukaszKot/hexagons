@@ -8,6 +8,9 @@ class Entity {
         this.movingPrecision = movingPrecision;
         this.standingAnimation = standingAnimation;
         this.runningAnimation = runningAnimation;
+        this.isMoving = false;
+        this.lastVector = this.container.position.clone()
+        this.newVector = this.container.position.clone();
     }
 
     getElement() {
@@ -19,7 +22,13 @@ class Entity {
     }
 
     move(vector) {
-        if (this.object) this.object.setAnimation(this.runningAnimation)
+        var actualSpeed = this.newVector.distanceTo(this.lastVector)
+        var flag = this.standingAnimation == "1stand" ?
+            actualSpeed == 0 : actualSpeed > 0
+        if (this.object && (!this.isMoving) && flag) {
+            this.object.setAnimation(this.runningAnimation)
+            this.isMoving = true;
+        }
         vector.y = 0;
         this.destination = vector;
         this.directionVect = vector.clone().sub(this.container.position).normalize()
@@ -34,13 +43,19 @@ class Entity {
         if (this.directionVect) {
             if (this.getDistanceFromTarget() > this.movingPrecision) {
                 this.getElement().translateOnAxis(this.directionVect, 2)
-                if (this.object) {
-                    if (this.getDistanceFromTarget() < this.movingPrecision) {
+            }
+            if (this.object) {
+                this.newVector = this.container.position.clone();
+                var actualSpeed = this.newVector.distanceTo(this.lastVector)
+                this.lastVector = this.newVector
+                if ((this.getDistanceFromTarget() < this.movingPrecision) && (actualSpeed == 0)) {
+                    if (this.isMoving) {
                         this.object.setAnimation(this.standingAnimation)
+                        this.isMoving = false;
                     }
+
                 }
             }
-
         }
     }
 

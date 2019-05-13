@@ -31,5 +31,6 @@ var Settings = {
         morphTargets: true
     }),
     playerMovingPrecision: 2,
-    allyMovingPrecision: 20
+    allyMovingPrecision: 20,
+    allyMovingPrecisionGame: 50
 }
