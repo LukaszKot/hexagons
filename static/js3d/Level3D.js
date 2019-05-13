@@ -40,6 +40,8 @@ class Level3D {
                 this.container.add(light.getElement())
                 this.lights.push(light)
             }
+            if (hexData.type == "ally") {
+            }
         }
     }
 
