@@ -6,6 +6,7 @@ class Level3D {
         this.container = new THREE.Object3D()
         this.net = new Net();
         this.lights = []
+        this.generateAlly();
         this.getData(0)
             .then((result) => {
                 this.data = result;
@@ -17,7 +18,7 @@ class Level3D {
         var model = new Model();
         model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
             .then(() => {
-
+                this.ally = new Entity(model.container, model, Settings.allyMovingPrecision)
             })
     }
 
