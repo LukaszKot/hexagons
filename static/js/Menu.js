@@ -90,7 +90,7 @@ class Menu {
     }
 
     generateTypes() {
-        this.typesNames = ['walls', 'enemy', 'treasure', 'light']
+        this.typesNames = ['walls', 'enemy', 'treasure', 'light', 'ally']
         for (var i = 0; i < this.typesNames.length; i++) {
             var div = $('<div>')
                 .addClass('buttons-style')
