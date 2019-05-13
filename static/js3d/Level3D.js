@@ -22,7 +22,7 @@ class Level3D {
         return new Promise((accept, reject) => {
             model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
                 .then(() => {
-                    this.ally = new Entity(model.container, model, Settings.allyMovingPrecision)
+                    this.ally = new Entity(model.container, model, Settings.allyMovingPrecision, "Stand", "run")
                     accept();
                 })
         })
@@ -62,7 +62,7 @@ class Level3D {
                 this.container.add(ally.getElement())
                 this.updateSubscriber.push(ally.object)
                 this.updateSubscriber.push(ally);
-                ally.object.setAnimation("Stand")
+                ally.object.setAnimation(ally.standingAnimation)
             }
         }
     }

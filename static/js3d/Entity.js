@@ -1,11 +1,13 @@
 class Entity {
-    constructor(modelContainer, object, movingPrecision) {
+    constructor(modelContainer, object, movingPrecision, standingAnimation = "1stand", runningAnimation = "2run") {
         this.container = new THREE.Object3D();
         this.entity = modelContainer
         this.entity.position.set(0, 5, 0)
         this.container.add(this.entity);
         this.object = object
         this.movingPrecision = movingPrecision;
+        this.standingAnimation = standingAnimation;
+        this.runningAnimation = runningAnimation;
     }
 
     getElement() {
@@ -17,7 +19,7 @@ class Entity {
     }
 
     move(vector) {
-        if (this.object) this.object.setAnimation("2run")
+        if (this.object) this.object.setAnimation(this.runningAnimation)
         vector.y = 0;
         this.destination = vector;
         this.directionVect = vector.clone().sub(this.container.position).normalize()
@@ -34,7 +36,7 @@ class Entity {
                 this.getElement().translateOnAxis(this.directionVect, 2)
                 if (this.object) {
                     if (this.getDistanceFromTarget() < this.movingPrecision) {
-                        this.object.setAnimation("1stand")
+                        this.object.setAnimation(this.standingAnimation)
                     }
                 }
             }
@@ -48,6 +50,6 @@ class Entity {
 
     clone() {
         var newModel = this.object.clone();
-        return new Entity(newModel.container, newModel, this.movingPrecision)
+        return new Entity(newModel.container, newModel, this.movingPrecision, "Stand", "run")
     }
 }
