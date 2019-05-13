@@ -12,6 +12,7 @@ class Model {
             loader.load(urlModel, (geometry) => {
                 var meshModel = new THREE.Mesh(geometry, texture)
                 meshModel.name = name
+                console.log(geometry.animations)
 
                 var box = new THREE.Box3().setFromObject(meshModel);
 
@@ -35,6 +36,15 @@ class Model {
     setAnimation(name) {
         this.mixer.uncacheRoot(this.meshModel)
         this.mixer.clipAction(name).play();
+    }
+
+    clone() {
+        var model = new Model()
+        model.container = new THREE.Object3D()
+        model.meshModel = this.meshModel.clone();
+        model.container.add(model.meshModel)
+        model.mixer = new THREE.AnimationMixer(model.meshModel)
+        return model
     }
 
 

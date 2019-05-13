@@ -45,4 +45,9 @@ class Entity {
     getDistanceFromTarget() {
         return this.getElement().position.clone().distanceTo(this.destination);
     }
+
+    clone() {
+        var newModel = this.object.clone();
+        return new Entity(newModel.container, newModel, this.movingPrecision)
+    }
 }

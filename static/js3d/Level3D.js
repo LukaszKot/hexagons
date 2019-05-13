@@ -1,13 +1,16 @@
 class Level3D {
-    constructor(id) {
+    constructor(id, updateSubscriber) {
         this.levelId = id
         this.radius = Settings.hexRadius
         this.hexHeight = Settings.hexHeight;
         this.container = new THREE.Object3D()
         this.net = new Net();
         this.lights = []
-        this.generateAlly();
-        this.getData(0)
+        this.updateSubscriber = updateSubscriber;
+        this.generateAlly()
+            .then(x => {
+                return this.getData(0)
+            })
             .then((result) => {
                 this.data = result;
                 this.makeLevel();
@@ -16,10 +19,14 @@ class Level3D {
 
     generateAlly() {
         var model = new Model();
-        model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
-            .then(() => {
-                this.ally = new Entity(model.container, model, Settings.allyMovingPrecision)
-            })
+        return new Promise((accept, reject) => {
+            model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
+                .then(() => {
+                    this.ally = new Entity(model.container, model, Settings.allyMovingPrecision)
+                    accept();
+                })
+        })
+
     }
 
     getData(id) {
@@ -50,6 +57,12 @@ class Level3D {
                 this.lights.push(light)
             }
             if (hexData.type == "ally") {
+                var ally = this.ally.clone();
+                ally.getElement().position.set(x, 0, z)
+                this.container.add(ally.getElement())
+                this.updateSubscriber.push(ally.object)
+                this.updateSubscriber.push(ally);
+                ally.object.setAnimation("Stand")
             }
         }
     }

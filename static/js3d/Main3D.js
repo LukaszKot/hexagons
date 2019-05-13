@@ -55,7 +55,7 @@ $(document).ready(function () {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         var model = new Model()
-        var level = new Level3D(0);
+        var level = new Level3D(0, updateSubscriber);
         level.getContainer().position.y -= Settings.floorHeight - 0.3
         model.loadModel("models/player.json", Settings.playerModelMaterial, "player")
             .then(() => {
