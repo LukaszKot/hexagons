@@ -1,16 +1,33 @@
 class Level3D {
-    constructor(id) {
+    constructor(id, updateSubscriber, allies) {
         this.levelId = id
         this.radius = Settings.hexRadius
         this.hexHeight = Settings.hexHeight;
         this.container = new THREE.Object3D()
         this.net = new Net();
         this.lights = []
-        this.getData(0)
+        this.updateSubscriber = updateSubscriber;
+        this.allies = allies;
+        this.generateAlly()
+            .then(x => {
+                return this.getData(0)
+            })
             .then((result) => {
                 this.data = result;
                 this.makeLevel();
             })
+    }
+
+    generateAlly() {
+        var model = new Model();
+        return new Promise((accept, reject) => {
+            model.loadModel("models/ally.json", Settings.allyModelMaterial, "ally")
+                .then(() => {
+                    this.ally = new Entity(model.container, model, Settings.allyMovingPrecisionGame, "Stand", "run")
+                    accept();
+                })
+        })
+
     }
 
     getData(id) {
@@ -39,6 +56,15 @@ class Level3D {
                 var light = new Light(x, this.hexHeight / 3 * 6, z)
                 this.container.add(light.getElement())
                 this.lights.push(light)
+            }
+            if (hexData.type == "ally") {
+                var ally = this.ally.clone();
+                ally.getElement().position.set(x, 0, z)
+                this.container.add(ally.getElement())
+                this.updateSubscriber.push(ally.object)
+                this.updateSubscriber.push(ally);
+                allies.push(ally)
+                ally.object.setAnimation(ally.standingAnimation)
             }
         }
     }

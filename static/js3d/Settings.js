@@ -26,6 +26,11 @@ var Settings = {
         map: new THREE.TextureLoader().load("textures/player.png"),
         morphTargets: true
     }),
+    allyModelMaterial: new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load("textures/ally.png"),
+        morphTargets: true
+    }),
     playerMovingPrecision: 2,
-    allyMovingPrecision: 20
+    allyMovingPrecision: 20,
+    allyMovingPrecisionGame: 50
 }

@@ -7,6 +7,7 @@ var player;
 var allies = []
 var followedObject;
 var team;
+var mousePosition = null
 
 $(document).ready(function () {
     scene = new THREE.Scene();
@@ -55,7 +56,7 @@ $(document).ready(function () {
         var gridObject = new Grid();
         scene.add(gridObject.getPlane())
         var model = new Model()
-        var level = new Level3D(0);
+        var level = new Level3D(0, updateSubscriber, allies);
         level.getContainer().position.y -= Settings.floorHeight - 0.3
         model.loadModel("models/player.json", Settings.playerModelMaterial, "player")
             .then(() => {
@@ -65,6 +66,8 @@ $(document).ready(function () {
                 updateSubscriber.push(player)
                 model.setAnimation("1stand")
                 followedObject = player
+                team = new Team(player)
+                updateSubscriber.push(team)
             })
         scene.add(level.getContainer())
         var isRaycasterEnabled = true
@@ -158,7 +161,12 @@ $(document).ready(function () {
             for (var i = 0; i < allies.length; i++) {
                 var theContainer = allies[i].getEntityMesh()
                 var intersects = raycaster.intersectObjects(theContainer.children);
+
                 if (intersects.length > 0) {
+                    for (var j = 0; j < team.allies.length; j++) {
+                        if (team.allies[j].getEntityMesh().children[0].uuid ==
+                            theContainer.children[0].uuid) return;
+                    }
                     team.addAlly(allies[i])
                     return;
                 }
@@ -172,6 +180,33 @@ $(document).ready(function () {
                 player.move(vector)
                 sphere.position.set(clickedVect.x, 0, clickedVect.z)
             }
+        })
+        $("#root").on("mousemove", (event) => {
+            mousePosition = event;
+        })
+        setInterval(() => {
+            if (mousePosition == null) return;
+            mouseVector.x = (mousePosition.clientX / $(window).width()) * 2 - 1;
+            mouseVector.y = -(mousePosition.clientY / $(window).height()) * 2 + 1;
+            raycaster.setFromCamera(mouseVector, camera);
+
+            for (var i = 0; i < allies.length; i++) {
+                var theContainer = allies[i].getEntityMesh()
+                var intersects = raycaster.intersectObjects(theContainer.children);
+
+                if (intersects.length > 0) {
+                    if (view == "game") {
+                        var position = allies[i].getElement().position.clone();
+                        var ring = new Ring(position);
+                        scene.add(ring)
+                        setTimeout(() => {
+                            scene.remove(ring)
+                        })
+                    }
+                    return;
+                }
+            }
+
         })
     }
 
