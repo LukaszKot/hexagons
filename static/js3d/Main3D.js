@@ -163,7 +163,6 @@ $(document).ready(function () {
                 var intersects = raycaster.intersectObjects(theContainer.children);
 
                 if (intersects.length > 0) {
-                    console.log(theContainer.children[0].geometry.animations)
                     for (var j = 0; j < team.allies.length; j++) {
                         if (team.allies[j].getEntityMesh().children[0].uuid ==
                             theContainer.children[0].uuid) return;
@@ -185,10 +184,30 @@ $(document).ready(function () {
         $("#root").on("mousemove", (event) => {
             mousePosition = event;
         })
-        // setInterval(() => {
-        //     if (mousePosition) console.log("mouse position", "x: " + mousePosition.clientX,
-        //         "y: " + mousePosition.clientY)
-        // })
+        setInterval(() => {
+            if (mousePosition == null) return;
+            mouseVector.x = (mousePosition.clientX / $(window).width()) * 2 - 1;
+            mouseVector.y = -(mousePosition.clientY / $(window).height()) * 2 + 1;
+            raycaster.setFromCamera(mouseVector, camera);
+
+            for (var i = 0; i < allies.length; i++) {
+                var theContainer = allies[i].getEntityMesh()
+                var intersects = raycaster.intersectObjects(theContainer.children);
+
+                if (intersects.length > 0) {
+                    if (view == "game") {
+                        var position = allies[i].getElement().position.clone();
+                        var ring = new Ring(position);
+                        scene.add(ring)
+                        setTimeout(() => {
+                            scene.remove(ring)
+                        })
+                    }
+                    return;
+                }
+            }
+
+        })
     }
 
 
