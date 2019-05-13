@@ -12,7 +12,6 @@ class Model {
             loader.load(urlModel, (geometry) => {
                 var meshModel = new THREE.Mesh(geometry, texture)
                 meshModel.name = name
-                console.log(geometry.animations)
 
                 var box = new THREE.Box3().setFromObject(meshModel);
 
