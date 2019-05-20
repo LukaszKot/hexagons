@@ -10,6 +10,7 @@ var team;
 var mousePosition = null
 var raycaster = new THREE.Raycaster();
 var hex;
+var firstTime = true;
 
 $(document).ready(function () {
     scene = new THREE.Scene();
@@ -173,6 +174,9 @@ $(document).ready(function () {
         var sphere = new THREE.Mesh(geometry, material);
         scene.add(sphere)
         $("#root").mousedown((event) => {
+            if (view == "game") {
+                firstTime = false;
+            }
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1;
             raycaster.setFromCamera(mouseVector, camera);
@@ -228,10 +232,13 @@ $(document).ready(function () {
         })
     }
 
-    var geometry = new THREE.SphereGeometry(3);
-    var material = Settings.raycasterMaterial
-    var theSphere = new THREE.Mesh(geometry, material);
-    scene.add(theSphere)
+    if (view == "colision") {
+        var geometry = new THREE.SphereGeometry(3);
+        var material = Settings.raycasterMaterial
+        var theSphere = new THREE.Mesh(geometry, material);
+        scene.add(theSphere)
+    }
+
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
@@ -264,6 +271,43 @@ $(document).ready(function () {
                 }
 
                 theSphere.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z)
+            }
+            else {
+                player.isCollide = false;
+            }
+        }
+        else if (view == "game") {
+            var raycaster = new THREE.Raycaster();
+            if (player == null) return;
+            var worldDirection = player.getEntityMesh().getWorldDirection(new THREE.Vector3(1, 1, 1)).clone()
+            worldDirection.x *= -1
+            worldDirection.y *= -1
+            worldDirection.z *= -1
+            worldDirection.y += 0.5;
+            var playerPosition = player.container.position.clone();
+            playerPosition.y += 0.5;
+            raycaster.ray = new THREE.Ray(playerPosition, worldDirection)
+            var intersects = raycaster.intersectObject(level.container, true);
+            if (intersects[0]) {
+                if (intersects[0].distance < 15) {
+                    if (!player.isCollide) {
+                        player.object.setAnimation(player.standingAnimation)
+                    }
+                    player.isCollide = true;
+                }
+                else {
+                    if (player.object.mixer._actions[0]._clip.name == player.standingAnimation && player.actualSpeed != 0 && firstTime == false) {
+                        player.object.setAnimation(player.runningAnimation)
+                    }
+                    player.isCollide = false;
+                }
+
+            }
+            else {
+                if (player.object.mixer._actions[0]._clip.name == player.standingAnimation && player.actualSpeed != 0) {
+                    player.object.setAnimation(player.runningAnimation)
+                }
+                player.isCollide = false;
             }
         }
 
