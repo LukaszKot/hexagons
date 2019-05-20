@@ -11,6 +11,7 @@ class Entity {
         this.isMoving = false;
         this.lastVector = this.container.position.clone()
         this.newVector = this.container.position.clone();
+        this.isCollide = false;
     }
 
     getElement() {
@@ -22,9 +23,9 @@ class Entity {
     }
 
     move(vector) {
-        var actualSpeed = this.newVector.distanceTo(this.lastVector)
+        this.actualSpeed = this.newVector.distanceTo(this.lastVector)
         var flag = this.standingAnimation == "1stand" ?
-            actualSpeed == 0 : actualSpeed > 0
+            this.actualSpeed == 0 : this.actualSpeed > 0
         if (this.object && (!this.isMoving) && flag) {
             this.object.setAnimation(this.runningAnimation)
             this.isMoving = true;
@@ -42,13 +43,16 @@ class Entity {
     update() {
         if (this.directionVect) {
             if (this.getDistanceFromTarget() > this.movingPrecision) {
-                this.getElement().translateOnAxis(this.directionVect, 2)
+                if (!this.isCollide) {
+                    this.getElement().translateOnAxis(this.directionVect, 2)
+                }
+
             }
             if (this.object) {
                 this.newVector = this.container.position.clone();
-                var actualSpeed = this.newVector.distanceTo(this.lastVector)
+                this.actualSpeed = this.newVector.distanceTo(this.lastVector)
                 this.lastVector = this.newVector
-                if ((this.getDistanceFromTarget() < this.movingPrecision) && (actualSpeed == 0)) {
+                if ((this.getDistanceFromTarget() < this.movingPrecision) && (this.actualSpeed == 0)) {
                     if (this.isMoving) {
                         this.object.setAnimation(this.standingAnimation)
                         this.isMoving = false;
@@ -57,6 +61,7 @@ class Entity {
                 }
             }
         }
+
     }
 
     getDistanceFromTarget() {
