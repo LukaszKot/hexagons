@@ -11,6 +11,7 @@ class Entity {
         this.isMoving = false;
         this.lastVector = this.container.position.clone()
         this.newVector = this.container.position.clone();
+        this.isCollide = false;
     }
 
     getElement() {
@@ -42,7 +43,10 @@ class Entity {
     update() {
         if (this.directionVect) {
             if (this.getDistanceFromTarget() > this.movingPrecision) {
-                this.getElement().translateOnAxis(this.directionVect, 2)
+                if (!this.isCollide) {
+                    this.getElement().translateOnAxis(this.directionVect, 2)
+                }
+
             }
             if (this.object) {
                 this.newVector = this.container.position.clone();

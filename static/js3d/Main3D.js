@@ -246,16 +246,24 @@ $(document).ready(function () {
         }
         if (view == "colision") {
             var raycaster = new THREE.Raycaster();
-            var worldDirection = player.getEntityMesh().getWorldDirection(new THREE.Vector3(1, 1, 1))
-            worldDirection.x *=-1
-            worldDirection.y *=-1
-            worldDirection.z *=-1
-            raycaster.ray = new THREE.Ray(player.container.position, worldDirection)
+            var worldDirection = player.getEntityMesh().getWorldDirection(new THREE.Vector3(1, 1, 1)).clone()
+            worldDirection.x *= -1
+            worldDirection.y *= -1
+            worldDirection.z *= -1
+            worldDirection.y += 0.1;
+            var playerPosition = player.container.position.clone();
+            playerPosition.y += 0.1;
+            raycaster.ray = new THREE.Ray(playerPosition, worldDirection)
             var intersects = raycaster.intersectObject(hex, true);
             if (intersects[0]) {
-                
+                if (intersects[0].distance < 10) {
+                    player.isCollide = true;
+                }
+                else {
+                    player.isCollide = false;
+                }
+
                 theSphere.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z)
-                
             }
         }
 
