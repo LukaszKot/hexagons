@@ -57,6 +57,7 @@ class Entity {
                 }
             }
         }
+
     }
 
     getDistanceFromTarget() {

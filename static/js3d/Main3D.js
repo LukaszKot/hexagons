@@ -8,6 +8,8 @@ var allies = []
 var followedObject;
 var team;
 var mousePosition = null
+var raycaster = new THREE.Raycaster();
+var hex;
 
 $(document).ready(function () {
     scene = new THREE.Scene();
@@ -137,6 +139,24 @@ $(document).ready(function () {
         updateSubscriber.push(team)
         var isRaycasterEnabled = true
     }
+    else if (view == "colision") {
+        var gridObject = new Grid();
+        scene.add(gridObject.getPlane())
+        gridObject.getPlane().position.y -= 0.1
+        Settings.isOrbitControl = false;
+
+        player = new Entity(createSimpleModel(), null, Settings.playerMovingPrecision)
+        scene.add(player.getElement())
+        updateSubscriber.push(player)
+        followedObject = player;
+        var isRaycasterEnabled = true
+        hex = new Hex3D(2, 3);
+        hex.position.y = Settings.hexHeight / 2 - Settings.floorHeight;
+        scene.add(hex)
+        var light = new Light(hex.position.x, hex.position.y + 50, hex.position.z)
+        scene.add(light.getElement())
+        light.changeIntensity(3)
+    }
 
     if (Settings.isOrbitControl) {
         var orbitControl = new THREE.OrbitControls(camera, renderer.domElement);
@@ -146,7 +166,6 @@ $(document).ready(function () {
     }
 
     if (isRaycasterEnabled) {
-        var raycaster = new THREE.Raycaster();
         var mouseVector = new THREE.Vector2();
         var clickedVect = null;
         var geometry = new THREE.SphereGeometry(3);
@@ -173,7 +192,6 @@ $(document).ready(function () {
             }
 
             var intersects = raycaster.intersectObjects(scene.children);
-
             if (intersects.length > 0) {
                 clickedVect = intersects[0].point
                 var vector = clickedVect.clone();
@@ -210,7 +228,10 @@ $(document).ready(function () {
         })
     }
 
-
+    var geometry = new THREE.SphereGeometry(3);
+    var material = Settings.raycasterMaterial
+    var theSphere = new THREE.Mesh(geometry, material);
+    scene.add(theSphere)
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
@@ -222,6 +243,20 @@ $(document).ready(function () {
             var position = followedObject.getElement().position;
             camera.position.set(position.x + 100, position.y + 200, position.z + 200)
             camera.lookAt(position)
+        }
+        if (view == "colision") {
+            var raycaster = new THREE.Raycaster();
+            var worldDirection = player.getEntityMesh().getWorldDirection(new THREE.Vector3(1, 1, 1))
+            worldDirection.x *=-1
+            worldDirection.y *=-1
+            worldDirection.z *=-1
+            raycaster.ray = new THREE.Ray(player.container.position, worldDirection)
+            var intersects = raycaster.intersectObject(hex, true);
+            if (intersects[0]) {
+                
+                theSphere.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z)
+                
+            }
         }
 
     }
