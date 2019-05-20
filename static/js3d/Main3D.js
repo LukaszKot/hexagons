@@ -289,7 +289,7 @@ $(document).ready(function () {
             raycaster.ray = new THREE.Ray(playerPosition, worldDirection)
             var intersects = raycaster.intersectObject(level.container, true);
             if (intersects[0]) {
-                if (intersects[0].distance < 15) {
+                if (intersects[0].distance < 20) {
                     if (!player.isCollide) {
                         player.object.setAnimation(player.standingAnimation)
                     }
